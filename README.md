@@ -58,7 +58,3 @@ http://localhost:3000
 - Recursive logic is used for hierarchical updates
 - Parent totals are recalculated automatically after each update
 - Edge cases such as invalid inputs are handled gracefully
-
-## Submission
-
-Public GitHub repository link shared as requested.

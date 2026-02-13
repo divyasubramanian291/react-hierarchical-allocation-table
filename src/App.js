@@ -8,7 +8,15 @@ import {
   distributeToChildren,
   round
 } from "./utils/treeHelpers";
-import "./App.css";
+
+import {
+  Container,
+  Typography,
+  Button,
+  Box,
+  Snackbar,
+  Alert
+} from "@mui/material";
 
 function App() {
   const [data, setData] = useState(() => {
@@ -18,6 +26,12 @@ function App() {
 
   const [inputs, setInputs] = useState({});
 
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    severity: "success"
+  });
+
   useEffect(() => {
     localStorage.setItem("hierarchicalData", JSON.stringify(data));
   }, [data]);
@@ -26,9 +40,21 @@ function App() {
     setInputs((prev) => ({ ...prev, [id]: value }));
   };
 
+  const showToast = (message, severity) => {
+    setToast({
+      open: true,
+      message,
+      severity
+    });
+  };
+
   const handlePercent = (id) => {
     const percent = parseFloat(inputs[id]);
-    if (isNaN(percent)) return;
+
+    if (isNaN(percent) || percent <= 0) {
+      showToast("Please enter a valid positive number", "error");
+      return;
+    }
 
     let updated = clone(data);
 
@@ -46,15 +72,21 @@ function App() {
     setData(updated);
 
     setInputs((prev) => {
-    const updatedInputs = { ...prev };
-    delete updatedInputs[id];
-    return updatedInputs;
-});
+      const updatedInputs = { ...prev };
+      delete updatedInputs[id];
+      return updatedInputs;
+    });
+
+    showToast("Updated successfully", "success");
   };
 
   const handleValue = (id) => {
     const newVal = parseFloat(inputs[id]);
-    if (isNaN(newVal)) return;
+
+    if (isNaN(newVal) || newVal <= 0) {
+      showToast("Please enter a valid positive number", "error");
+      return;
+    }
 
     let updated = clone(data);
 
@@ -68,33 +100,69 @@ function App() {
 
     updated = recalcParentValues(updated);
     setData(updated);
-    
+
     setInputs((prev) => {
-    const updatedInputs = { ...prev };
-    delete updatedInputs[id];
-    return updatedInputs;
-  });
+      const updatedInputs = { ...prev };
+      delete updatedInputs[id];
+      return updatedInputs;
+    });
+
+    showToast("Updated successfully", "success");
   };
 
   const resetData = () => {
     localStorage.removeItem("hierarchicalData");
     setData(initialData);
+    showToast("Data reset successfully", "info");
   };
 
   return (
-    <div className="container">
-      <h2>Hierarchical Sales Table</h2>
-      <button onClick={resetData} className="reset">
-        Reset
-      </button>
-      <HierarchicalTable 
+    <Container maxWidth={false} disableGutters sx={{ mt: 3, px: 4 }}>
+      <Typography variant="h5" align="center" gutterBottom>
+        Hierarchical Sales Table
+      </Typography>
+
+      <Box display="flex" justifyContent="center" mb={2}>
+        <Button
+          variant="contained"
+          color="error"
+          onClick={resetData}
+          sx={{
+            borderRadius: "20px",
+            textTransform: "none",
+            transition: "0.3s",
+            "&:hover": {
+              transform: "scale(1.05)"
+            }
+          }}
+        >
+          Reset
+        </Button>
+      </Box>
+
+      <HierarchicalTable
         data={data}
         inputs={inputs}
         setInput={setInput}
         handlePercent={handlePercent}
         handleValue={handleValue}
       />
-    </div>
+
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={3000}
+        onClose={() => setToast({ ...toast, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          severity={toast.severity}
+          onClose={() => setToast({ ...toast, open: false })}
+          sx={{ width: "100%" }}
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
+    </Container>
   );
 }
 

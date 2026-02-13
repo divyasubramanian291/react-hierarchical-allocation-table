@@ -1,4 +1,10 @@
 import React from "react";
+import {
+  TableRow,
+  TableCell,
+  Button,
+  TextField
+} from "@mui/material";
 
 const HierarchicalTableRow = ({
   node,
@@ -12,41 +18,75 @@ const HierarchicalTableRow = ({
     node.originalValue === 0
       ? 0
       : (
-          ((node.value - node.originalValue) / node.originalValue) *
+          ((node.value - node.originalValue) /
+            node.originalValue) *
           100
         ).toFixed(2);
 
+  const inputValue = inputs[node.id];
+
+  const hasError =
+    inputValue !== undefined &&
+    (isNaN(inputValue) || inputValue <= 0);
+
   return (
     <>
-      <tr>
-        <td style={{ paddingLeft: `${level * 20}px` }}>
-          {level > 0 && "-- "} {node.label}
-        </td>
+      <TableRow hover>
+        <TableCell sx={{ pl: level * 4 }}>
+          {node.label}
+        </TableCell>
 
-        <td>{node.value}</td>
+        <TableCell>{node.value}</TableCell>
 
-        <td>
-          <input
+        <TableCell>
+          <TextField
+            size="small"
             type="number"
-            value={inputs[node.id] || ""}
+            value={inputValue || ""}
             onChange={(e) => setInput(node.id, e.target.value)}
+            error={hasError}
+            helperText={hasError ? "Enter positive number" : ""}
           />
-        </td>
+        </TableCell>
 
-        <td>
-          <button onClick={() => handlePercent(node.id)}>
+        <TableCell>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => handlePercent(node.id)}
+            sx={{
+              borderRadius: "20px",
+              textTransform: "none",
+              transition: "0.3s",
+              "&:hover": {
+                transform: "scale(1.08)"
+              }
+            }}
+          >
             Allocation %
-          </button>
-        </td>
+          </Button>
+        </TableCell>
 
-        <td>
-          <button onClick={() => handleValue(node.id)}>
+        <TableCell>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => handleValue(node.id)}
+            sx={{
+              borderRadius: "20px",
+              textTransform: "none",
+              transition: "0.3s",
+              "&:hover": {
+                transform: "scale(1.08)"
+              }
+            }}
+          >
             Allocation Val
-          </button>
-        </td>
+          </Button>
+        </TableCell>
 
-        <td>{variance}%</td>
-      </tr>
+        <TableCell>{variance}%</TableCell>
+      </TableRow>
 
       {node.children &&
         node.children.map((child) => (
