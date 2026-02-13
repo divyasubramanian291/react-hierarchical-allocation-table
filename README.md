@@ -38,7 +38,7 @@ The application supports real-time calculations, hierarchical updates, and persi
 - ReactJS (Functional Components)
 - React Hooks (useState, useEffect)
 - JavaScript (ES6)
-- Basic CSS
+- CSS / optionally UI kit (e.g., Material-UI)
 
 ## Setup Instructions
 
@@ -58,3 +58,6 @@ http://localhost:3000
 - Recursive logic is used for hierarchical updates
 - Parent totals are recalculated automatically after each update
 - Edge cases such as invalid inputs are handled gracefully
+
+## Hosted URL Link
+https://hierarchical-table-management.vercel.app/
